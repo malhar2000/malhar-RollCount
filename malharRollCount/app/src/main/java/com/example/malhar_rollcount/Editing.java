@@ -40,7 +40,7 @@ public class Editing extends AppCompatActivity {
 
         editButton = findViewById(R.id.editButton);
         editText = findViewById(R.id.editEditText);
-        editPref =  this.getSharedPreferences("com.example.rollcount",
+        editPref =  this.getSharedPreferences("com.example.malhar_rollcount",
                 Context.MODE_PRIVATE);
 
         try {
