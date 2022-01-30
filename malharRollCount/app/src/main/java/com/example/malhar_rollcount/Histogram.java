@@ -36,21 +36,20 @@ public class Histogram extends AppCompatActivity {
         String table_name = getIntent().getStringExtra("histo");
         Cursor c = dbh.rawQuery("SELECT * FROM [" + table_name+"]", null);
 
-        int max = Integer.MIN_VALUE;
-        int min = Integer.MAX_VALUE;
-        int sum = 0;
+        float sum = 0f;
+        float count = 0f;
         int entry_data;
         int id = c.getColumnIndex("id");
+        int col_id;
         int entry = c.getColumnIndex("entry");
         while (c.moveToNext()) {
             entry_data = c.getInt(entry);
+            col_id = Integer.parseInt(c.getString(id));
             entries.add(new BarEntry(Float.parseFloat(c.getString(id)), entry_data));
-            if(entry_data > max){
-                max = entry_data;
-            }if(entry_data < min){
-                min = entry_data;
+            if(entry_data != 0){
+                count += 1;
             }
-            sum += entry_data;
+            sum += entry_data * col_id;
         }
 
         BarDataSet barDataSet = new BarDataSet(entries, "Dice Roll");
@@ -61,13 +60,21 @@ public class Histogram extends AppCompatActivity {
             theData.add(new BarEntry(i, 0));
         }
         TextView textView1 = findViewById(R.id.textViewMax);
+        int max = 100;
+        c = dbh.rawQuery("SELECT MAX(entry) FROM [" + table_name+"]", null);
+        c.moveToFirst();
+        max = c.getInt(0);
         textView1.setText("Maximum "+max);
 
         TextView textView2 = findViewById(R.id.textViewMin);
+        int min = 0;
+        c = dbh.rawQuery("SELECT MIN(entry) FROM [" + table_name+"]", null);
+        c.moveToFirst();
+        min = c.getInt(0);
         textView2.setText("Minimum "+min);
 
         TextView textView3 = findViewById(R.id.textViewAvg);
-        textView3.setText("Average");
+        textView3.setText("Average "+(sum/count));
 
         barDataSet.setColors(new int[] {Color.RED, Color.GREEN, Color.GRAY, Color.BLACK, Color.BLUE});
 
